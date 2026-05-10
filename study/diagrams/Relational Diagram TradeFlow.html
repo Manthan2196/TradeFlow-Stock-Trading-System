@@ -1,0 +1,246 @@
+
+<style>
+  #erd-wrap { overflow-x: auto; padding: 8px 0; background: #ffffff; color: #1a1a1a; }
+  #erd-wrap svg { display: block; background: #ffffff; }
+  #erd-wrap svg text,
+  #erd-wrap svg .entityLabel,
+  #erd-wrap svg .attributeBoxOdd text,
+  #erd-wrap svg .attributeBoxEven text,
+  #erd-wrap svg .relationshipLabelBox text,
+  #erd-wrap svg .er.entityLabel,
+  #erd-wrap svg foreignObject div {
+    fill: #1a1a1a !important;
+    color: #1a1a1a !important;
+  }
+</style>
+<div id="erd-wrap"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: false,
+    fontSize: '12px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: '#73726c',
+    textColor: '#1a1a1a',
+    primaryColor: '#f1efe8',
+    primaryBorderColor: '#b4b2a9',
+    primaryTextColor: '#1a1a1a',
+    secondaryColor: '#ffffff',
+    tertiaryColor: '#ffffff',
+    background: '#ffffff',
+    mainBkg: '#f1efe8',
+    nodeTextColor: '#1a1a1a',
+    attributeBackgroundColorOdd: '#ffffff',
+    attributeBackgroundColorEven: '#f6f4ee',
+  },
+});
+
+const diagram = `erDiagram
+  users {
+    int user_id PK
+    varchar name
+    varchar email
+    varchar kyc_status
+    varchar role
+    boolean is_active
+    timestamp created_at
+  }
+  roles {
+    int role_id PK
+    varchar role_name
+    text description
+  }
+  permissions {
+    int permission_id PK
+    varchar permission_name
+    varchar resource
+    varchar action
+  }
+  user_roles {
+    int user_id FK
+    int role_id FK
+    timestamp assigned_at
+    int assigned_by FK
+  }
+  role_permissions {
+    int role_id FK
+    int permission_id FK
+  }
+  wallet {
+    int wallet_id PK
+    int user_id FK
+    numeric balance
+    timestamp last_updated
+  }
+  wallet_transactions {
+    int wallet_id FK
+    int transaction_id PK
+    numeric amount
+    varchar transaction_type
+    timestamp created_at
+  }
+  stocks {
+    int stock_id PK
+    text symbol
+    text company_name
+    text sector
+    boolean is_active
+  }
+  orders {
+    int order_id PK
+    int user_id FK
+    int stock_id FK
+    varchar order_type
+    numeric order_price
+    int quantity
+    varchar order_status
+    timestamp created_at
+  }
+  trades {
+    int trade_id PK
+    int order_id FK
+    numeric executed_price
+    int executed_quantity
+    timestamp trade_time
+  }
+  portfolio {
+    int portfolio_id PK
+    int user_id FK
+    int stock_id FK
+    int total_quantity
+    numeric avg_buy_price
+  }
+  portfolio_transactions {
+    int pt_id PK
+    int portfolio_id FK
+    int order_id FK
+    int trade_id FK
+    int quantity_change
+    timestamp created_at
+  }
+  stock_price_history {
+    int price_id PK
+    int stock_id FK
+    numeric price
+    timestamp price_timestamp
+  }
+  company_profiles {
+    int company_id PK
+    int user_id FK
+    int stock_id FK
+    varchar company_name
+    varchar cin_number
+    boolean verified
+  }
+  company_financials {
+    int financial_id PK
+    int company_id FK
+    varchar quarter
+    int fiscal_year
+    numeric revenue
+    numeric net_profit
+    numeric eps
+  }
+  company_announcements {
+    int announcement_id PK
+    int company_id FK
+    varchar title
+    varchar announcement_type
+    date effective_date
+    boolean is_published
+  }
+  audit_logs {
+    bigint audit_id PK
+    int user_id FK
+    varchar action
+    varchar resource
+    text resource_id
+    varchar status
+    timestamp created_at
+  }
+  database_transactions {
+    int txn_id PK
+    int user_id FK
+    varchar txn_state
+    timestamp start_time
+    timestamp end_time
+  }
+  system_logs {
+    int log_id PK
+    int txn_id FK
+    text operation
+    text status
+    timestamp timestamp
+  }
+  locks {
+    int lock_id PK
+    int txn_id FK
+    text resource_type
+    varchar lock_mode
+  }
+  system_config {
+    varchar config_key PK
+    text config_value
+    varchar data_type
+    int updated_by FK
+    timestamp updated_at
+  }
+
+  users ||--o{ user_roles : "has"
+  roles ||--o{ user_roles : "assigned to"
+  roles ||--o{ role_permissions : "has"
+  permissions ||--o{ role_permissions : "granted via"
+  users ||--|| wallet : "owns"
+  wallet ||--o{ wallet_transactions : "records"
+  users ||--o{ orders : "places"
+  stocks ||--o{ orders : "ordered as"
+  orders ||--o{ trades : "executed as"
+  users ||--o{ portfolio : "holds"
+  stocks ||--o{ portfolio : "in"
+  portfolio ||--o{ portfolio_transactions : "updated by"
+  orders ||--o{ portfolio_transactions : "triggers"
+  trades ||--o{ portfolio_transactions : "from"
+  stocks ||--o{ stock_price_history : "has"
+  users ||--|| company_profiles : "manages"
+  stocks ||--|| company_profiles : "listed as"
+  company_profiles ||--o{ company_financials : "reports"
+  company_profiles ||--o{ company_announcements : "publishes"
+  users ||--o{ audit_logs : "logged in"
+  users ||--o{ database_transactions : "initiates"
+  database_transactions ||--o{ system_logs : "produces"
+  database_transactions ||--o{ locks : "holds"
+  users ||--o{ system_config : "updates"
+`;
+
+const { svg } = await mermaid.render('erd-main', diagram);
+document.getElementById('erd-wrap').innerHTML = svg;
+
+document.querySelectorAll('#erd-wrap svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill','stroke','stroke-width','class','style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd-wrap svg .row-rect-odd path, #erd-wrap svg .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>

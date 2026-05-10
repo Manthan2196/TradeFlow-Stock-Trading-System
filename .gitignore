@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Local environment and generated database files
+.env
+*.db
+*.sqlite
+*.sqlite3
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Old empty export folder, kept out if Windows locks it
+tradeflow_output/
