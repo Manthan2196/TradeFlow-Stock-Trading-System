@@ -1,0 +1,16 @@
+# GitHub Linguist language classification
+#
+# The frontend is a single-file React app, so most JavaScript lives inside
+# index.html. Count that file as JavaScript so the repository language bar
+# reflects the actual application stack more accurately.
+frontend/index.html linguist-language=JavaScript
+
+# Source languages
+backend/**/*.py linguist-language=Python
+database/**/*.sql linguist-language=SQL
+
+# Supporting study/report assets should not affect language percentages.
+*.md linguist-documentation
+*.pdf linguist-documentation
+study/diagrams/*.html linguist-documentation
+database/backup/*.tar linguist-generated

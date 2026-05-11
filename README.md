@@ -1,5 +1,11 @@
 # TradeFlow Stock Trading System
 
+![Python](https://img.shields.io/badge/Python-Flask-3776AB?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-React-F7DF1E?logo=javascript&logoColor=black)
+![SQL](https://img.shields.io/badge/SQL-PostgreSQL%20%7C%20SQLite-336791?logo=postgresql&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-Frontend-E34F26?logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-Styling-1572B6?logo=css3&logoColor=white)
+
 TradeFlow is a DBMS project for a stock trading platform. It includes a React single-page frontend, a Python Flask API, and a relational database design for users, companies, admins, orders, trades, wallets, portfolios, audit logs, and stock price history.
 
 ## Features
