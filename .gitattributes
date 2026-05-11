@@ -7,6 +7,7 @@ frontend/index.html linguist-language=JavaScript
 
 # Source languages
 backend/**/*.py linguist-language=Python
+database/*.sql linguist-language=SQL
 database/**/*.sql linguist-language=SQL
 
 # Supporting study/report assets should not affect language percentages.
